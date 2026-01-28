@@ -10,12 +10,20 @@ function App() {
   const [output, setOutput] = useState('');
   const [errors, setErrors] = useState([]);
   const [tokens, setTokens] = useState([]);
+  const [syntaxErrors, setSyntaxErrors] = useState([]);
+  const [syntaxTree, setSyntaxTree] = useState(null);
   const [activeAnalysis, setActiveAnalysis] = useState(null);
+
+  const handleTabSwitch = (tabName) => {
+    setActiveAnalysis(tabName);
+  };
 
   const handleRun = async (analysisType) => {
     setActiveTab('terminal');
     setErrors([]);
     setTokens([]);
+    setSyntaxErrors([]);
+    setSyntaxTree(null);
 
     try {
       const response = await fetch('http://localhost:5000/analyze', {
@@ -29,18 +37,21 @@ function App() {
       
       const data = await response.json();
       
+      console.log('Backend response:', data); // Debug log
+      
       if (data.success) {
-        let outputMessages = ['<b>Running code...</b><br>'];
+        let outputMessages = [''];
         
-        // Set which analysis tab to show based on backend response
         setActiveAnalysis(data.activeAnalysis);
         
-        // Always show tokens if available
         if (data.tokens && data.tokens.length > 0) {
           setTokens(data.tokens);
         }
+
+        if (data.syntaxTree) {
+          setSyntaxTree(data.syntaxTree);
+        }
         
-        // Parse output from backend
         const outputLines = data.output.split('\n');
         outputLines.forEach(line => {
           if (line.includes('✓')) {
@@ -54,19 +65,37 @@ function App() {
         
         setOutput(outputMessages.join(''));
         
-        // Handle errors
         if (data.errors && data.errors.length > 0) {
           setErrors(data.errors);
         }
+
+        if (data.syntaxErrors && data.syntaxErrors.length > 0) {
+          setSyntaxErrors(data.syntaxErrors);
+        }
         
       } else {
+        // FAILED CASE
+        let outputMessages = ['<b>Running code...</b><br>'];
+        
+        if (data.activeAnalysis === 'lexical') {
+          outputMessages.push('<span style="color: red;">X Lexical analysis failed</span><br>');
+        } else if (data.activeAnalysis === 'syntax') {
+          outputMessages.push('<span style="color: green;">✓ Lexical analysis passed</span><br>');
+          outputMessages.push('<span style="color: red;">X Syntax analysis failed</span><br>');
+        }
+        
+        setOutput(outputMessages.join(''));
         setErrors(data.errors || ['Analysis failed']);
-        setOutput('<span style="color: red;">Analysis failed. See errors below.</span>');
         setActiveAnalysis(data.activeAnalysis);
         
-        // Still show tokens if available
         if (data.tokens && data.tokens.length > 0) {
           setTokens(data.tokens);
+        }
+
+        // IMPORTANT: Set syntax errors even on failure
+        if (data.syntaxErrors && data.syntaxErrors.length > 0) {
+          console.log('Setting syntax errors:', data.syntaxErrors); // Debug
+          setSyntaxErrors(data.syntaxErrors);
         }
       }
     } catch (error) {
@@ -80,6 +109,8 @@ function App() {
     setOutput('');
     setErrors([]);
     setTokens([]);
+    setSyntaxErrors([]);
+    setSyntaxTree(null);
     setActiveAnalysis(null);
   };
 
@@ -92,7 +123,6 @@ function App() {
       <Header />
       
       <div className="flex-1 flex flex-col p-4 gap-2 min-h-0">
-        {/* Top section: Editor and Side Panel */}
         <div className="flex-1 flex gap-3 min-h-0">
           <Editor 
             code={code}
@@ -103,11 +133,13 @@ function App() {
           <SidePanel 
             tokens={tokens}
             activeAnalysis={activeAnalysis}
+            syntaxErrors={syntaxErrors}
+            syntaxTree={syntaxTree}
             onAnalysisClick={handleAnalysisClick}
+            onTabSwitch={handleTabSwitch}
           />
         </div>
         
-        {/* Bottom section: Terminal */}
         <Terminal 
           output={output}
           errors={errors}

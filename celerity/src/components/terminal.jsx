@@ -9,8 +9,8 @@ const Terminal = ({ output, errors, activeTab, setActiveTab }) => {
           onClick={() => setActiveTab('terminal')}
           className={`px-5 py-2 border-2 border-[#8B7355] transition-colors ${
             activeTab === 'terminal'
-              ? 'bg-[#C8B5A0] text-[#333] border-b-0 rounded-t'
-              : 'bg-[#E8DCC8] text-[#333] hover:bg-[#D4C4B0] rounded-t'
+              ? 'bg-[#E8DCC8] text-[#333] hover:bg-[#D4C4B0] rounded-t'
+              : 'bg-[#C8B5A0] text-[#333] border-b-0 rounded-t'
           }`}
         >
           Terminal
@@ -19,8 +19,8 @@ const Terminal = ({ output, errors, activeTab, setActiveTab }) => {
           onClick={() => setActiveTab('generate')}
           className={`px-5 py-2 border-2 border-[#8B7355] transition-colors ${
             activeTab === 'generate'
-              ? 'bg-[#C8B5A0] text-[#333] border-b-0 rounded-t'
-              : 'bg-[#E8DCC8] text-[#333] hover:bg-[#D4C4B0] rounded-t'
+              ? 'bg-[#E8DCC8] text-[#333] hover:bg-[#D4C4B0] rounded-t'
+              : 'bg-[#C8B5A0] text-[#333] border-b-0 rounded-t'
           }`}
         >
           Generate Code

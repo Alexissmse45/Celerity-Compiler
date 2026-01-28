@@ -1,13 +1,13 @@
 import React from 'react';
 
-const SidePanel = ({ tokens, activeAnalysis, syntaxTree, semanticInfo, syntaxErrors }) => {
+const SidePanel = ({ tokens, activeAnalysis, syntaxTree, semanticInfo, syntaxErrors, onTabSwitch }) => {
   return (
     <div className="w-96 bg-[#e8dcc8] border-2 border-[#8B7355] flex flex-col">
       {/* Analysis Header with Tabs */}
       <div className="bg-[#d4c4a8] border-b-2 border-[#8B7355]">
         <div className="flex">
           <button
-            onClick={() => {}}
+            onClick={() => onTabSwitch && onTabSwitch('lexical')}
             className={`flex-1 px-4 py-2 font-semibold transition-colors ${
               activeAnalysis === 'lexical'
                 ? 'bg-[#e8dcc8] text-gray-800 border-b-2 border-[#8B7355]'
@@ -17,7 +17,7 @@ const SidePanel = ({ tokens, activeAnalysis, syntaxTree, semanticInfo, syntaxErr
             Lexical
           </button>
           <button
-            onClick={() => {}}
+            onClick={() => onTabSwitch && onTabSwitch('syntax')}
             className={`flex-1 px-4 py-2 font-semibold transition-colors ${
               activeAnalysis === 'syntax'
                 ? 'bg-[#e8dcc8] text-gray-800 border-b-2 border-[#8B7355]'
@@ -27,12 +27,9 @@ const SidePanel = ({ tokens, activeAnalysis, syntaxTree, semanticInfo, syntaxErr
             Syntax
           </button>
           <button
-            onClick={() => {}}
-            className={`flex-1 px-4 py-2 font-semibold transition-colors ${
-              activeAnalysis === 'semantic'
-                ? 'bg-[#e8dcc8] text-gray-800 border-b-2 border-[#8B7355]'
-                : 'bg-[#c4b5a0] text-gray-600 hover:bg-[#d4c4a8]'
-            }`}
+            disabled
+            className="flex-1 px-4 py-2 font-semibold bg-[#c4b5a0] text-gray-500 cursor-not-allowed"
+            title="Coming Soon"
           >
             Semantic
           </button>
@@ -78,32 +75,38 @@ const SidePanel = ({ tokens, activeAnalysis, syntaxTree, semanticInfo, syntaxErr
           </div>
         )}
 
-        {/* SYNTAX ANALYSIS - Parse Tree or Errors */}
+        {/* SYNTAX ANALYSIS - Clean Display */}
         {activeAnalysis === 'syntax' && (
-          <div className="p-4">
+          <div className="h-full">
             {syntaxErrors && syntaxErrors.length > 0 ? (
-              <div className="text-gray-700">
-                <p className="font-semibold mb-3 text-red-600">Syntax Errors:</p>
-                <div className="bg-white p-3 rounded border border-red-400 max-h-96 overflow-auto">
-                  {syntaxErrors.map((error, index) => (
-                    <div key={index} className="text-red-600 mb-2 text-sm">
-                      {error}
-                    </div>
-                  ))}
+              // Show Errors
+              <div className="p-4">
+                <div className="text-gray-700">
+                  <p className="font-semibold mb-3 text-red-600">Syntax Errors:</p>
+                  <div className="bg-white p-3 rounded border border-red-400 max-h-96 overflow-auto">
+                    {syntaxErrors.map((error, index) => (
+                      <div key={index} className="text-red-600 mb-2 text-sm">
+                        {error}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : syntaxTree ? (
-              <div className="text-gray-700">
-                <p className="font-semibold mb-2">Parse Tree:</p>
-                <pre className="bg-white p-3 rounded border border-[#8B7355] text-xs overflow-auto max-h-96">
-                  {JSON.stringify(syntaxTree, null, 2)}
-                </pre>
+              // Show Success Message
+              <div className="flex items-center justify-center h-full p-4">
+                <div className="text-center text-green-600">
+                  <div className="text-5xl mb-3">✓</div>
+                  <p className="font-semibold text-lg mb-2">Syntax Analysis Completed</p>
+                  <p className="text-sm text-gray-600">No errors found</p>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full">
+              // No Analysis Yet
+              <div className="flex items-center justify-center h-full p-4">
                 <div className="text-center text-gray-600">
                   <p className="font-semibold mb-2">Syntax Analysis</p>
-                  <p className="text-sm">Parse tree will appear here after syntax analysis</p>
+                  <p className="text-sm">Run syntax analysis to see results</p>
                 </div>
               </div>
             )}

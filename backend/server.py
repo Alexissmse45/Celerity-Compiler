@@ -4,7 +4,7 @@ from lexer import Lexer
 from CFG import LL1Parser, parse_table, follow_set, cfg
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+CORS(app)
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -20,6 +20,7 @@ def analyze():
                 'errors': ['No code provided'],
                 'tokens': [],
                 'syntaxErrors': [],
+                'syntaxTree': None,
                 'activeAnalysis': None
             }), 400
         
@@ -46,7 +47,6 @@ def analyze():
             result['output'] = 'Running code...\n✗ Lexical analysis failed'
             result['activeAnalysis'] = 'lexical'
             
-            # Still format tokens even if there are errors
             formatted_tokens = []
             for token in tokens:
                 formatted_tokens.append({
@@ -73,7 +73,6 @@ def analyze():
         output_lines.append('Running code...')
         output_lines.append('✓ Lexical analysis passed')
         
-        # If only lexical analysis requested
         if analysis_type == 'lexical':
             result['output'] = '\n'.join(output_lines)
             result['activeAnalysis'] = 'lexical'
@@ -85,16 +84,22 @@ def analyze():
         parse_success, syntax_errors = parser.parse(tokens)
         
         if not parse_success:
+            print(f"Syntax errors found: {syntax_errors}")  # Debug
             result['success'] = False
             result['syntaxErrors'] = syntax_errors
-            result['errors'] = syntax_errors  # Also show in terminal
+            result['errors'] = syntax_errors
             output_lines.append('✗ Syntax analysis failed')
             result['output'] = '\n'.join(output_lines)
             result['activeAnalysis'] = 'syntax'
             return jsonify(result)
         
         output_lines.append('✓ Syntax analysis passed')
-        result['syntaxTree'] = {'message': 'Parse tree data here'}
+        
+        # Create a meaningful parse tree display
+        result['syntaxTree'] = {
+            'message': 'Syntax analysis completed without errors'
+        }
+        
         result['output'] = '\n'.join(output_lines)
         result['activeAnalysis'] = 'syntax'
         
@@ -109,6 +114,7 @@ def analyze():
             'errors': [f'Server error: {str(e)}'],
             'syntaxErrors': [],
             'tokens': [],
+            'syntaxTree': None,
             'activeAnalysis': None
         }), 500
 

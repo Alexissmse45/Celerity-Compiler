@@ -2,6 +2,14 @@ import React from 'react';
 
 const Editor = ({ code, setCode, onRun, onStop, isRunning }) => {
   const lineCount = code.split('\n').length;
+  const [scrollTop, setScrollTop] = React.useState(0);
+  const [scrollLeft, setScrollLeft] = React.useState(0);
+  
+  // Handle scroll synchronization
+  const handleScroll = (e) => {
+    setScrollTop(e.target.scrollTop);
+    setScrollLeft(e.target.scrollLeft);
+  };
   
   // Handle Tab key press
   const handleKeyDown = (e) => {
@@ -144,22 +152,24 @@ const Editor = ({ code, setCode, onRun, onStop, isRunning }) => {
       {/* Editor Area */}
       <div className="flex-1 bg-[#E8DCC8] border-2 border-[#8B7355] overflow-hidden flex relative">
         {/* Line Numbers */}
-        <div className="bg-[#D4C4B0] px-2 py-2 text-center text-[#666] select-none" style={{ 
+        <div className="bg-[#D4C4B0] px-2 py-2 text-center text-[#666] select-none overflow-hidden" style={{ 
           fontFamily: 'Consolas, monospace',
           fontSize: '21px',
           minWidth: '55px',
           maxWidth: '55px'
         }}>
-          {Array.from({ length: lineCount }, (_, i) => (
-            <div key={i} style={{ lineHeight: '30px', height: '30px' }}>
-              {i + 1}
-            </div>
-          ))}
+          <div style={{ transform: `translateY(-${scrollTop}px)` }}>
+            {Array.from({ length: lineCount }, (_, i) => (
+              <div key={i} style={{ lineHeight: '30px', height: '30px' }}>
+                {i + 1}
+              </div>
+            ))}
+          </div>
         </div>
         
         {/* Highlighted Code Display (Read-only overlay) */}
         <div 
-          className="absolute left-0 top-0 p-2 pointer-events-none"
+          className="absolute left-0 top-0 p-2 pointer-events-none overflow-hidden"
           style={{ 
             fontFamily: 'Consolas, monospace',
             fontSize: '21px',
@@ -168,10 +178,18 @@ const Editor = ({ code, setCode, onRun, onStop, isRunning }) => {
             lineHeight: '30px',
             tabSize: 2,
             MozTabSize: 2,
-            whiteSpace: 'pre'
+            whiteSpace: 'pre',
+            padding: '8px',
+            width: 'calc(100% - 55px)',
+            height: '100%'
           }}
         >
-          {highlightCode(code)}
+          <div style={{ 
+            transform: `translate(-${scrollLeft}px, -${scrollTop}px)`,
+            width: 'max-content'
+          }}>
+            {highlightCode(code)}
+          </div>
         </div>
         
         {/* Text Area (Transparent text for input) */}
@@ -179,6 +197,7 @@ const Editor = ({ code, setCode, onRun, onStop, isRunning }) => {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
+          onScroll={handleScroll}
           className="flex-1 p-2 bg-transparent resize-none focus:outline-none relative z-10"
           spellCheck="false"
           style={{ 
@@ -189,7 +208,8 @@ const Editor = ({ code, setCode, onRun, onStop, isRunning }) => {
             lineHeight: '30px',
             color: 'transparent',
             caretColor: '#333',
-            whiteSpace: 'pre'
+            whiteSpace: 'pre',
+            overflow: 'auto'
           }}
         />
       </div>
