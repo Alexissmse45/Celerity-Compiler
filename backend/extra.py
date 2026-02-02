@@ -493,28 +493,42 @@ class LL1Parser:
 
         return True, []
 
+    def get_contextual_message(self, non_terminal, expected_tokens):
+        """Generate context-aware error message based on the non-terminal"""
+        if non_terminal in CONTEXT_MESSAGES:
+            context = CONTEXT_MESSAGES[non_terminal]
+            # Filter expected tokens to only show relevant ones
+            relevant_expected = [t for t in expected_tokens if t in context["expected"]]
+            if relevant_expected:
+                return context["description"], set(relevant_expected)
+        return None, expected_tokens
+
     def syntax_error(self, line, found, expected, column, context_symbol):
         if line == -1 and column == 0:  # Use last valid line number if not set
             line = self.input_tokens[self.index - 1][2] if self.index > 0 else 1
             column = self.input_tokens[self.index - 1][3] if self.index > 0 else 1
         
-        # Special case: declarations after statements
-        # Check if we're expecting statements but found a declaration keyword
-        declaration_keywords = {"num", "deci", "word", "single", "bool", "const", "struct"}
-        statement_expected = {"identifier", "++", "--", "if", "while", "for", "do", "match", "out"}
+        # Get context-aware message if available
+        context_desc = None
+        if context_symbol and context_symbol in CONTEXT_MESSAGES:
+            context_desc, expected = self.get_contextual_message(context_symbol, expected)
         
-        if (expected & statement_expected) and found in declaration_keywords:
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): All variable declarations must be at the top of the function body before any statements. Found '{found}' but declarations are not allowed here."
         # Build the error message
-        elif not self.symbol_stack:  
+        if not self.symbol_stack:  
             # Empty stack only report unexpected token
             error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}'"
         elif found == '$':  
             # Special case: No unexpected token, just missing expected ones
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): Missing expected token(s): {', '.join(sorted(expected))}"
+            if context_desc:
+                error_message = f"❌ Syntax Error at (line {line}, column {column}): Expected {context_desc}: {', '.join(sorted(expected))}"
+            else:
+                error_message = f"❌ Syntax Error at (line {line}, column {column}): Missing expected token(s): {', '.join(sorted(expected))}"
         else:
             # unexpected token and expected tokens
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}'. Expected: {', '.join(sorted(expected))}"
+            if context_desc:
+                error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}' (Expected {context_desc}: {', '.join(sorted(expected))})"
+            else:
+                error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}' (Expected: {', '.join(sorted(expected))})"
 
         self.errors.append(error_message)
 

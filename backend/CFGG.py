@@ -9,10 +9,10 @@ cfg = {
                         ["struct", "identifier", "<struct_after>"]],
 
     "<data_type>": [
-        ["num"],
-        ["deci"],
-        ["word"],
-        ["single"],
+        ["num_literal"],
+        ["deci_literal"],
+        ["word_literal"],
+        ["single_literal"],
         ["bool"]],
 
     "<literal>": [
@@ -302,7 +302,7 @@ cfg = {
         ["λ"]],
 
     "<out_value>": [
-        ["word_literal"],
+        ["word"],
         ["identifier", "<value_iden_after>"]],
 
     "<return_statement>": [
@@ -313,7 +313,6 @@ cfg = {
         ["λ"]],
 
 }
-
 def compute_first_set(cfg):
     first_set = {non_terminal: set() for non_terminal in cfg.keys()}
 
@@ -459,7 +458,7 @@ class LL1Parser:
                     self.index += 1
                 else:
                     # Terminal mismatch = syntax error
-                    self.syntax_error(current_line, current_lexeme, {top_symbol}, current_column, top_symbol)
+                    self.syntax_error(current_line, current_lexeme, {top_symbol}, current_column)
                     return False, self.errors
             
             # Non-terminal processing
@@ -474,7 +473,7 @@ class LL1Parser:
                 else:
                     # No production 
                     expected_tokens = set(self.parse_table.get(top_symbol, {}).keys())
-                    self.syntax_error(current_line, current_lexeme, expected_tokens, current_column, top_symbol)
+                    self.syntax_error(current_line, current_lexeme, expected_tokens, current_column)
                     return False, self.errors
             
             # End marker
@@ -482,39 +481,31 @@ class LL1Parser:
                 if current_token == "$":
                     break
                 else:
-                    self.syntax_error(current_line, current_lexeme, {"$"}, current_column, "$")
+                    self.syntax_error(current_line, current_lexeme, {"$"}, current_column)
                     return False, self.errors
         
         # Check if we processed all input
         if self.index < len(self.input_tokens) - 1:
             remaining_token = self.input_tokens[self.index]
-            self.syntax_error(remaining_token[2], remaining_token[0], {"EOF"}, remaining_token[3], None)
+            self.syntax_error(remaining_token[2], remaining_token[0], {"EOF"}, remaining_token[3])
             return False, self.errors
 
         return True, []
 
-    def syntax_error(self, line, found, expected, column, context_symbol):
+    def syntax_error(self, line, found, expected, column):
         if line == -1 and column == 0:  # Use last valid line number if not set
             line = self.input_tokens[self.index - 1][2] if self.index > 0 else 1
             column = self.input_tokens[self.index - 1][3] if self.index > 0 else 1
         
-        # Special case: declarations after statements
-        # Check if we're expecting statements but found a declaration keyword
-        declaration_keywords = {"num", "deci", "word", "single", "bool", "const", "struct"}
-        statement_expected = {"identifier", "++", "--", "if", "while", "for", "do", "match", "out"}
-        
-        if (expected & statement_expected) and found in declaration_keywords:
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): All variable declarations must be at the top of the function body before any statements. Found '{found}' but declarations are not allowed here."
-        # Build the error message
-        elif not self.symbol_stack:  
+        if not self.symbol_stack:  
             # Empty stack only report unexpected token
             error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}'"
         elif found == '$':  
             # Special case: No unexpected token, just missing expected ones
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): Missing expected token(s): {', '.join(sorted(expected))}"
+            error_message = f"❌ Syntax Error at (line {line}, column {column}): Missing expected token(s): {', '.join(expected)}"
         else:
-            # unexpected token and expected tokens
-            error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}'. Expected: {', '.join(sorted(expected))}"
+            # unexpected token amd expected tokens
+            error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}' (Expected {', '.join(expected)})"
 
         self.errors.append(error_message)
 
@@ -525,3 +516,257 @@ class LL1Parser:
             print("\n⚠️ Syntax Errors:")
             for error in self.errors:
                 print(error)
+
+
+
+
+
+
+
+# def compute_first_set(cfg):
+#     first_set = {non_terminal: set() for non_terminal in cfg.keys()}
+
+#     def first_of(symbol):
+#         if symbol not in cfg:
+#             return {symbol} 
+
+#         if symbol in first_set and first_set[symbol]:
+#             return first_set[symbol]
+
+#         result = set()
+        
+#         for production in cfg[symbol]:
+#             for sub_symbol in production:
+#                 if sub_symbol not in cfg: # terminal
+#                     result.add(sub_symbol)
+#                     break  
+#                 else: # non-terminal
+#                     sub_first = first_of(sub_symbol)
+#                     result.update(sub_first - {"λ"})  
+#                     if "λ" not in sub_first:
+#                         break  
+            
+#             else: # all symbols in the production derive λ
+#                 result.add("λ")
+
+#         first_set[symbol] = result
+#         return result
+
+#     for non_terminal in cfg:
+#         first_of(non_terminal)
+
+#     return first_set
+
+# def compute_follow_set(cfg, start_symbol, first_set):
+#     follow_set = {non_terminal: set() for non_terminal in cfg.keys()}
+#     follow_set[start_symbol].add("$")  
+
+#     changed = True  
+
+#     while changed:
+#         changed = False 
+    
+#         for non_terminal, productions in cfg.items():
+#             for production in productions:
+#                 for i, item in enumerate(production):
+#                     if item in cfg:  # nt only
+#                         follow_before = follow_set[item].copy()
+
+#                         if i + 1 < len(production):  # A -> <alpha>B<beta>
+#                             beta = production[i + 1]
+#                             if beta in cfg:  # if <beta> is a non-terminal
+#                                 follow_set[item].update(first_set[beta] - {"λ"})
+#                                 if "λ" in first_set[beta]:
+#                                     follow_set[item].update(follow_set[beta])
+#                             else:  # if <beta> is a terminal
+#                                 follow_set[item].add(beta)
+#                         else:  # nothing follows B
+#                             follow_set[item].update(follow_set[non_terminal])
+
+#                         if follow_set[item] != follow_before:
+#                             changed = True  
+
+#     return follow_set
+
+# def compute_predict_set(cfg, first_set, follow_set):
+#     predict_set = {}  
+
+#     for non_terminal, productions in cfg.items():
+#         for production in productions:
+#             production_key = (non_terminal, tuple(production))  # A = (A,(prod))
+#             predict_set[production_key] = set()
+
+#             first_alpha = set()
+#             for symbol in production:
+#                 if symbol in first_set:  # non-terminal
+#                     first_alpha.update(first_set[symbol] - {"λ"})
+#                     if "λ" not in first_set[symbol]:
+#                         break
+#                 else:  # terminal
+#                     first_alpha.add(symbol)
+#                     break
+#             else:  
+#                 first_alpha.add("λ")
+
+#             predict_set[production_key].update(first_alpha - {"λ"})
+
+#             # if λ in first_alpha, add follow set of lhs to predict set
+#             if "λ" in first_alpha:
+#                 predict_set[production_key].update(follow_set[non_terminal])
+
+#     return predict_set
+
+# def gen_parse_table():
+#     parse_table = {}
+#     for (non_terminal, production), predict in predict_set.items():
+#         if non_terminal not in parse_table:
+#             parse_table[non_terminal] = {}
+#         for terminal in predict:
+#             if terminal in parse_table[non_terminal]:
+#                 raise ValueError(f"Grammar is not LL(1): Conflict in parse table for {non_terminal} and {terminal}")
+#             parse_table[non_terminal][terminal] = production
+
+#     return parse_table  
+
+# first_set = compute_first_set(cfg)
+# follow_set = compute_follow_set(cfg, "<program>", first_set)
+# predict_set = compute_predict_set(cfg, first_set, follow_set)
+# parse_table = gen_parse_table()
+
+# class LL1Parser:
+#     def __init__(self, cfg, parse_table, follow_set):
+#         self.cfg = cfg
+#         self.parse_table = parse_table
+#         self.follow_set = follow_set
+#         self.symbol_stack = []  # Stack for grammar symbols
+#         self.input_tokens = []
+#         self.index = 0
+#         self.errors = []
+
+#     def parse(self, tokens):
+#         # Initialize stack
+#         self.symbol_stack = ["$", "<program>"]  # Start with end marker and start symbol
+#         self.input_tokens = tokens + [("$", "$", -1, 0)]  # Append EOF
+#         self.index = 0
+#         self.errors = []
+        
+#         while self.symbol_stack:
+#             top_symbol = self.symbol_stack.pop()
+            
+#             current_lexeme = self.input_tokens[self.index][0]
+#             current_token = self.input_tokens[self.index][1]  # Token type
+#             current_line = self.input_tokens[self.index][2]   # Line number
+#             current_column = self.input_tokens[self.index][3] # Column position
+
+#             # Skip null productions
+#             if top_symbol == "λ":
+#                 continue
+
+#             # Terminal match
+#             if top_symbol not in self.cfg:  # a terminal
+#                 if top_symbol == current_token:
+#                     self.index += 1
+#                 else:
+#                     # Terminal mismatch = syntax error
+#                     self.syntax_error(current_line, current_lexeme, {top_symbol}, current_column)
+#                     return False, self.errors
+            
+#             # Non-terminal processing
+#             elif top_symbol in self.cfg:  # It's a non-terminal
+#                 if current_token in self.parse_table.get(top_symbol, {}):
+#                     production = self.parse_table[top_symbol][current_token]
+                    
+#                     # Push reversed symbols to stack
+#                     for symbol in reversed(production):
+#                         if symbol != "λ":  # Skip null
+#                             self.symbol_stack.append(symbol)
+#                 else:
+#                     # No production 
+#                     expected_tokens = set(self.parse_table.get(top_symbol, {}).keys())
+#                     self.syntax_error(current_line, current_lexeme, expected_tokens, current_column)
+#                     return False, self.errors
+            
+#             # End marker
+#             elif top_symbol == "$":
+#                 if current_token == "$":
+#                     break
+#                 else:
+#                     self.syntax_error(current_line, current_lexeme, {"$"}, current_column)
+#                     return False, self.errors
+        
+#         # Check if we processed all input
+#         if self.index < len(self.input_tokens) - 1:
+#             remaining_token = self.input_tokens[self.index]
+#             self.syntax_error(remaining_token[2], remaining_token[0], {"EOF"}, remaining_token[3])
+#             return False, self.errors
+
+#         return True, []
+
+#     def syntax_error(self, line, found, expected, column):
+#         if line == -1 and column == 0:  # Use last valid line number if not set
+#             line = self.input_tokens[self.index - 1][2] if self.index > 0 else 1
+#             column = self.input_tokens[self.index - 1][3] if self.index > 0 else 1
+        
+#         if not self.symbol_stack:  
+#             # Empty stack only report unexpected token
+#             error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}'"
+#         elif found == '$':  
+#             # Special case: No unexpected token, just missing expected ones
+#             error_message = f"❌ Syntax Error at (line {line}, column {column}): Missing expected token(s): {', '.join(expected)}"
+#         else:
+#             # unexpected token amd expected tokens
+#             error_message = f"❌ Syntax Error at (line {line}, column {column}): Unexpected '{found}' (Expected {', '.join(expected)})"
+
+#         self.errors.append(error_message)
+
+#     def print_errors(self):
+#         if not self.errors:
+#             print("\n✅ No Syntax Errors Found.")
+#         else:
+#             print("\n⚠️ Syntax Errors:")
+#             for error in self.errors:
+#                 print(error)
+
+# # --- PRINT FIRST AND FOLLOW SETS ---
+
+# print("========== FIRST SETS ==========")
+# for non_terminal, symbols in first_set.items():
+#     print(f"{symbols}")
+
+# print("\n========== FOLLOW SETS ==========")
+# for non_terminal, symbols in follow_set.items():
+#     print(f"{symbols}")
+
+# print("\n========== PREDICT SETS ==========")
+# for non_terminal, symbols in predict_set.items():
+#     print(f"{non_terminal}: {symbols}")
+
+# # --- AMBIGUITY CHECK (LL(1) CONFLICT DETECTION) ---
+
+# print("\n========== AMBIGUITY CHECK ==========")
+# conflicts_found = False
+# parse_table_conflicts = {}
+
+# for non_terminal, productions in cfg.items():
+#     entry_map = {}
+#     for production in productions:
+#         key = (non_terminal, tuple(production))
+#         predict_symbols = predict_set[key]
+#         for terminal in predict_symbols:
+#             if terminal in entry_map:
+#                 conflicts_found = True
+#                 if (non_terminal, terminal) not in parse_table_conflicts:
+#                     parse_table_conflicts[(non_terminal, terminal)] = []
+#                 parse_table_conflicts[(non_terminal, terminal)].append(production)
+#             else:
+#                 entry_map[terminal] = production
+
+# if conflicts_found:
+#     print("⚠️ Grammar is NOT LL(1) — Conflicts detected!\n")
+#     for (non_terminal, terminal), prods in parse_table_conflicts.items():
+#         print(f"Conflict at {non_terminal} for terminal '{terminal}':")
+#         for prod in prods:
+#             print(f"   → {prod}")
+# else:
+#     print("✅ Grammar is LL(1) — No conflicts found.")
+

@@ -42,7 +42,7 @@ class Lexer:
         
         self.delimword = {')', '}', '+'} | self.comma | self.semicolon | self.space | self.colon
         self.delimsingle = {'}', ')'} | self.comma | self.semicolon | self.space | self.colon
-        self.delimdigit = {'}', ')', ']'} | self.space | self.delimop | self.semicolon | self.colon | self.comma #remove period
+        self.delimdigit = {'}', ')', ']'} | self.space | self.delimop | self.semicolon | self.colon | self.comma  #remove period
         self.delimiden = {'(', ')', '{', '}', '[', ']', '.'} | self.space | self.delimop | self.semicolon | self.colon | self.comma | self.newln #kulang sa delimiden "{,[" nag add rin ng newln here.
         self.parspace = {'('} | self.space
         self.curspace = {'{', '}'} | self.space | self.newln
@@ -3784,11 +3784,11 @@ class Lexer:
 
             #int and decimal Literals
                 case 203:# zero
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 204
                         if char is not None:
                             self.step_back()
-                        elif char == '.':
+                    elif char == '.':
                             state = 224
                             lexeme += char
                     elif char and char.isdigit():
@@ -3806,12 +3806,12 @@ class Lexer:
                         state = 0
                 case 204:# Finalize 'Int-Literal' token
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 205:
-                    if char is None or char in self.digit and char != 0:
+                    if char in self.digit and char != 0:
                         state = 206
                         lexeme += char
                     elif char == '0':
@@ -3830,7 +3830,7 @@ class Lexer:
                                 column = 0
                         state = 0
                 case 206:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 207
                         if char is not None:
                             self.step_back()
@@ -3851,12 +3851,12 @@ class Lexer:
                         state = 0
                 case 207:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 208: 
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 209
                         if char is not None:
                             self.step_back()
@@ -3877,12 +3877,12 @@ class Lexer:
                         state = 0
                 case 209:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 210: 
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 211
                         if char is not None:
                             self.step_back()
@@ -3903,12 +3903,12 @@ class Lexer:
                         state = 0
                 case 211:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 212:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 213
                         if char is not None:
                             self.step_back()
@@ -3929,12 +3929,12 @@ class Lexer:
                         state = 0
                 case 213:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 214: 
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 215
                         if char is not None:
                             self.step_back()
@@ -3955,12 +3955,12 @@ class Lexer:
                         state = 0
                 case 215:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 216:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 217
                         if char is not None:
                             self.step_back()
@@ -3981,12 +3981,12 @@ class Lexer:
                         state = 0
                 case 217:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 218:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 219
                         if char is not None:
                             self.step_back()
@@ -4007,12 +4007,12 @@ class Lexer:
                         state = 0
                 case 219:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 220:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 221
                         if char is not None:
                             self.step_back()
@@ -4033,12 +4033,12 @@ class Lexer:
                         state = 0
                 case 221:
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 222:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 223
                         if char is not None:
                             self.step_back()
@@ -4060,12 +4060,12 @@ class Lexer:
                         state = 0
                 case 223: 
                     column -= 2
-                    tokens.append((lexeme, "num", line, column))
+                    tokens.append((lexeme, "num_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 224:
-                    if char is None or char and char.isdigit():
+                    if char and char.isdigit():
                         state = 225
                         lexeme += char
                     else:
@@ -4078,7 +4078,7 @@ class Lexer:
                                 column = 0
                         state = 0
                 case 225:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 226
                         if char is not None:
                             self.step_back()
@@ -4096,12 +4096,12 @@ class Lexer:
                         state = 0
                 case 226:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 227:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 228
                         if char is not None:
                             self.step_back()
@@ -4119,12 +4119,12 @@ class Lexer:
                         state = 0
                 case 228:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 229:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 230
                         if char is not None:
                             self.step_back()
@@ -4142,12 +4142,12 @@ class Lexer:
                         state = 0
                 case 230:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 231:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 232
                         if char is not None:
                             self.step_back()
@@ -4165,12 +4165,12 @@ class Lexer:
                         state = 0
                 case 232:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 233:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 234
                         if char is not None:
                             self.step_back()
@@ -4188,12 +4188,12 @@ class Lexer:
                         state = 0
                 case 234:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 235:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 236
                         if char is not None:
                             self.step_back()
@@ -4211,12 +4211,12 @@ class Lexer:
                         state = 0
                 case 236:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 237:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 238
                         if char is not None:
                             self.step_back()
@@ -4234,12 +4234,12 @@ class Lexer:
                         state = 0
                 case 238:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 239:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 240
                         if char is not None:
                             self.step_back()
@@ -4257,12 +4257,12 @@ class Lexer:
                         state = 0
                 case 240:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
                 case 241:
-                    if char is None or char in self.delimdigit:
+                    if char in self.delimdigit:
                         state = 242
                         if char is not None:
                             self.step_back()
@@ -4281,7 +4281,7 @@ class Lexer:
                         state = 0
                 case 242:
                     column -= 2
-                    tokens.append((lexeme, "deci", line, column))
+                    tokens.append((lexeme, "deci_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0
@@ -4332,7 +4332,7 @@ class Lexer:
                         state = 0
                 case 246: 
                     column -= 2
-                    tokens.append((lexeme, "single", line, column))
+                    tokens.append((lexeme, "single_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0   
@@ -4364,7 +4364,7 @@ class Lexer:
                         state = 0
                 case 249: 
                     column -= 2
-                    tokens.append((lexeme, "word", line, column))
+                    tokens.append((lexeme, "word_literal", line, column))
                     if char is not None:
                         self.step_back()
                     state = 0 
