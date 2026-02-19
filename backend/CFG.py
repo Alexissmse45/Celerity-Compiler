@@ -59,7 +59,7 @@ cfg = {
 
     "<array_after>": [
         [";"],
-        ["=", "{", "<array_val>", "}", ";"],
+        ["=", "{", "<array_value>", "}", ";"],
         ["[", "<size>", "]", "<array2d_after>"]],
 
     "<array2d_after>": [
@@ -135,6 +135,7 @@ cfg = {
         ["<conditional_statement>"],
         ["<loop_statement>"],
         ["out", "(", "<out_scope>", ")", ";"]],
+        
 
     "<statement_id_after>": [
         ["(", "<argument_set>", ")",";"],
@@ -259,6 +260,7 @@ cfg = {
     "<pattern>": [
         ["identifier"],
         ["<literal>"]],
+
 
     "<loop_statement>": [
         ["for", "(", "identifier", "=", "<arithmetic_expression>", ";", "<condition>", ";", "<incre_decre_option>", ")", "{", "<statement_set>", "}"],

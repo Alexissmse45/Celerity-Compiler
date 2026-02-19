@@ -73,7 +73,6 @@ class Lexer:
             print(f"Fetching char at pos {self.position}: {repr(char)}")  # debug print
             self.position += 1 # Move to next position
             return char
-
         return None # End of file reached
 
     def peek(self): # Looks at the next character without consuming it.
@@ -3665,7 +3664,7 @@ class Lexer:
                         self.step_back()
                     state = 0
                 case 193:#}
-                    if char is None or char in self.delim14:
+                    if char in self.delim14:
                         state = 194
                         if char is not None:
                             self.step_back()

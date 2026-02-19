@@ -3,7 +3,7 @@ Python 3.10.11 (Windows x86-64 executable installer)
 
 git clone <github link>
 
-cd Celerity 
+cd backend 
 create kau venv
 py -3.10 -m venv venv310
 
@@ -17,3 +17,6 @@ python server.py
 
 
 kahit anong python na, di naman na tau naka GUI
+
+cd
+npm install

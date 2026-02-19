@@ -5,7 +5,7 @@ import SidePanel from './components/sidepanel';
 import Terminal from './components/terminal';
 
 function App() {
-  const [code, setCode] = useState(`main(){\n  #Welcome To Celerity Compiler!\n}`);
+  const [code, setCode] = useState(`main(){\n  #Welcome To Celerity Compiler!\n} \n`);
   const [activeTab, setActiveTab] = useState('terminal');
   const [output, setOutput] = useState('');
   const [errors, setErrors] = useState([]);
