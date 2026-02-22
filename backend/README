@@ -15,8 +15,5 @@ to run:
 python server.py
 
 
-
-kahit anong python na, di naman na tau naka GUI
-
 cd
 npm install
