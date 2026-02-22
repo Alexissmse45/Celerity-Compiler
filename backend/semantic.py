@@ -323,6 +323,8 @@ class Semantic:
                 if dimension > 0:
                     if self.tokens[self.index][1] == "{":
                         array_size, value_type = self.array_initialization(data_type, dimension)
+                        if value_type == "error" or array_size is None:
+                            return  # stop processing, error already recorded
                         if sizes is None:
                             sizes = array_size
                         else:
