@@ -3792,14 +3792,14 @@ class Lexer:
                             lexeme += char
                     elif char and char.isdigit():
                         lexeme += char
-                        self.errors.append(f"(Line {line}, Column {column}): Int Literal '{lexeme}' leading zero is not allowed.")
+                        self.errors.append(f"(Line {line}, Column {column}): Num Literal '{lexeme}' leading zero is not allowed.")
                         state = 0
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3822,9 +3822,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3842,9 +3842,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3868,9 +3868,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3894,9 +3894,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3920,9 +3920,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3946,9 +3946,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3972,9 +3972,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -3998,9 +3998,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -4024,9 +4024,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0
@@ -4043,7 +4043,7 @@ class Lexer:
                             self.step_back()
                     elif char and char.isdigit():
                         lexeme += char
-                        self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' exceeds 9 digit limit.'")
+                        self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' exceeds 9 digit limit.'")
                         state = 0
                     elif char == '.':
                         state = 239
@@ -4051,9 +4051,9 @@ class Lexer:
                     else:
                         column -= 1
                         if char is None:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Missing Delimiter.")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Missing Delimiter.")
                         else:
-                            self.errors.append(f"(at Line {line}, Column {column}): Int Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
+                            self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' Invalid Delimiter ( {repr(char)} ).")
                             if char == '\n':
                                 column = 0
                         state = 0

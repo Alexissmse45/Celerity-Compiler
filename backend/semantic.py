@@ -44,7 +44,7 @@ class Semantic:
         self.index = 0
         self.data_types = {"num", "deci", "bool", "single", "word"}
 
-        if self.current_scope not in self.symbol_table:
+        if self.current_scope not in self.symbol_table: #If this scope is not yet in the symbol table, create it
             self.symbol_table[self.current_scope] = {}
 
         while self.index < len(self.tokens):
@@ -53,7 +53,7 @@ class Semantic:
             if token_type == "const":
                 self.const_declaration()
 
-            elif token_type == "struct":
+            elif token_type == "struct":  #"struct", "Person", "IDENTIFIER","{",  
                 next_tok = self.tokens[self.index + 1][0] if self.index + 1 < len(self.tokens) else None
                 next_next = self.tokens[self.index + 2][0] if self.index + 2 < len(self.tokens) else None
                 if next_next == "{":
@@ -75,11 +75,11 @@ class Semantic:
     # ------------------------------------------------------------------ #
     #  Helpers
     # ------------------------------------------------------------------ #
-    def _peek(self, offset=1):
-        idx = self.index + offset
-        if idx < len(self.tokens):
-            return self.tokens[idx]
-        return (None, None, -1, 0)
+    def _peek(self, offset=1): #Look ahead in the token list without moving the current position. And avoids crashing if there is no next token
+        idx = self.index + offset # self.index = 3 offset = 1 = 5
+        if idx < len(self.tokens): # this line prevents crashing, Is that position valid? 0, 1, 2, 3, 4 If idx = 10, that would crash.
+            return self.tokens[idx] # If so, return the token at that position.
+        return (None, None, -1, 0) # If idx is NOT valid (too big), Instead of crashing, it returns:
 
     def is_duplicate_variable(self, var_name, line, column):
         if (var_name in self.symbol_table.get(self.current_scope, {}) or
@@ -295,7 +295,7 @@ class Semantic:
     #  Variable declaration  →  <type> id [<arr>] [= <expr>] , ... ;
     # ------------------------------------------------------------------ #
     def variable_declaration(self):
-        symbol_type = "variable_declaration"
+        symbol_type = "Variable Declaration"
         data_type = self.tokens[self.index][1]
         dimension = 0
         sizes = None

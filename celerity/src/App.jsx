@@ -12,6 +12,8 @@ function App() {
   const [tokens, setTokens] = useState([]);
   const [syntaxErrors, setSyntaxErrors] = useState([]);
   const [syntaxTree, setSyntaxTree] = useState(null);
+  const [semanticErrors, setSemanticErrors] = useState([]);
+  const [semanticInfo, setSemanticInfo] = useState(null);
   const [activeAnalysis, setActiveAnalysis] = useState(null);
 
   const handleTabSwitch = (tabName) => {
@@ -24,6 +26,8 @@ function App() {
     setTokens([]);
     setSyntaxErrors([]);
     setSyntaxTree(null);
+    setSemanticErrors([]);
+    setSemanticInfo(null);
 
     try {
       const response = await fetch('http://localhost:5000/analyze', {
@@ -44,19 +48,27 @@ function App() {
         
         setActiveAnalysis(data.activeAnalysis);
         
+        // Set tokens from lexical analysis
         if (data.tokens && data.tokens.length > 0) {
           setTokens(data.tokens);
         }
 
+        // Set syntax tree if syntax passed
         if (data.syntaxTree) {
           setSyntaxTree(data.syntaxTree);
         }
+
+        // Set semantic info if semantic passed
+        if (data.semanticInfo) {
+          setSemanticInfo(data.semanticInfo);
+        }
         
+        // Build output messages with checkmarks
         const outputLines = data.output.split('\n');
         outputLines.forEach(line => {
           if (line.includes('✓')) {
             outputMessages.push(`<span style="color: green;">${line}</span><br>`);
-          } else if (line.includes('✗')) {
+          } else if (line.includes('✗') || line.includes('X')) {
             outputMessages.push(`<span style="color: red;">${line}</span><br>`);
           } else {
             outputMessages.push(`${line}<br>`);
@@ -65,12 +77,19 @@ function App() {
         
         setOutput(outputMessages.join(''));
         
+        // Set general errors if any
         if (data.errors && data.errors.length > 0) {
           setErrors(data.errors);
         }
 
+        // Set syntax errors if any
         if (data.syntaxErrors && data.syntaxErrors.length > 0) {
           setSyntaxErrors(data.syntaxErrors);
+        }
+
+        // Set semantic errors if any
+        if (data.semanticErrors && data.semanticErrors.length > 0) {
+          setSemanticErrors(data.semanticErrors);
         }
         
       } else {
@@ -82,20 +101,36 @@ function App() {
         } else if (data.activeAnalysis === 'syntax') {
           outputMessages.push('<span style="color: green;">✓ Lexical analysis passed</span><br>');
           outputMessages.push('<span style="color: red;">X Syntax analysis failed</span><br>');
+        } else if (data.activeAnalysis === 'semantic') {
+          outputMessages.push('<span style="color: green;">✓ Lexical analysis passed</span><br>');
+          outputMessages.push('<span style="color: green;">✓ Syntax analysis passed</span><br>');
+          outputMessages.push('<span style="color: red;">X Semantic analysis failed</span><br>');
         }
         
         setOutput(outputMessages.join(''));
         setErrors(data.errors || ['Analysis failed']);
         setActiveAnalysis(data.activeAnalysis);
         
+        // Set tokens even on failure (if lexical passed)
         if (data.tokens && data.tokens.length > 0) {
           setTokens(data.tokens);
         }
 
-        // IMPORTANT: Set syntax errors even on failure
+        // Set syntax tree even if semantic failed (if syntax passed)
+        if (data.syntaxTree) {
+          setSyntaxTree(data.syntaxTree);
+        }
+
+        // Set syntax errors if present
         if (data.syntaxErrors && data.syntaxErrors.length > 0) {
           console.log('Setting syntax errors:', data.syntaxErrors); // Debug
           setSyntaxErrors(data.syntaxErrors);
+        }
+
+        // Set semantic errors if present
+        if (data.semanticErrors && data.semanticErrors.length > 0) {
+          console.log('Setting semantic errors:', data.semanticErrors); // Debug
+          setSemanticErrors(data.semanticErrors);
         }
       }
     } catch (error) {
@@ -111,6 +146,8 @@ function App() {
     setTokens([]);
     setSyntaxErrors([]);
     setSyntaxTree(null);
+    setSemanticErrors([]);
+    setSemanticInfo(null);
     setActiveAnalysis(null);
   };
 
@@ -135,6 +172,8 @@ function App() {
             activeAnalysis={activeAnalysis}
             syntaxErrors={syntaxErrors}
             syntaxTree={syntaxTree}
+            semanticErrors={semanticErrors}
+            semanticInfo={semanticInfo}
             onAnalysisClick={handleAnalysisClick}
             onTabSwitch={handleTabSwitch}
           />
