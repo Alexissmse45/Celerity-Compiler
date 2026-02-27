@@ -4042,8 +4042,10 @@ class Lexer:
                         if char is not None:
                             self.step_back()
                     elif char and char.isdigit():
-                        lexeme += char
+                        # DON'T append char to lexeme — error is on the 9 digits only
                         self.errors.append(f"(at Line {line}, Column {column}): Num Literal '{lexeme}' exceeds 9 digit limit.'")
+                        # Step back so the 10th digit starts a NEW token
+                        self.step_back()
                         state = 0
                     elif char == '.':
                         state = 239
